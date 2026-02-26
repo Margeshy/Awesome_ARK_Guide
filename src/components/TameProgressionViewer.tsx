@@ -1,45 +1,250 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card } from './UI';
 import { ChevronDown } from 'lucide-react';
 
-const tamesList = [
-  { name: 'Dodo', hp: 40, stam: 100, oxy: 150, food: 450, weight: 50, priorities: ['Health'] },
-  { name: 'Parasaur', hp: 390, stam: 175, oxy: 150, food: 1500, weight: 255, priorities: ['Weight', 'Stamina', 'Health', 'Speed'] },
-  { name: 'Lystrosaurus', hp: 130, stam: 100, oxy: 150, food: 400, weight: 55, priorities: ['Health'] },
-  { name: 'Trike', hp: 395, stam: 150, oxy: 150, food: 3000, weight: 315, priorities: ['Weight', 'Melee', 'Health', 'Stamina'] },
-  { name: 'Moschops', hp: 200, stam: 150, oxy: 150, food: 1500, weight: 130, priorities: ['Melee', 'Weight', 'Health', 'Stamina'] },
-  { name: 'Dilophosaurus', hp: 130, stam: 100, oxy: 150, food: 450, weight: 45, priorities: ['Health', 'Melee', 'Speed'] },
-  { name: 'Raptor', hp: 200, stam: 150, oxy: 150, food: 1200, weight: 140, priorities: ['Melee', 'Health', 'Stamina', 'Speed'] },
-  { name: 'Pteranodon', hp: 210, stam: 150, oxy: 150, food: 1200, weight: 120, priorities: ['Stamina', 'Weight', 'Health'] },
-  { name: 'Ankylosaurus', hp: 700, stam: 175, oxy: 150, food: 3000, weight: 250, priorities: ['Melee', 'Weight', 'Health', 'Stamina'] },
-  { name: 'Doedicurus', hp: 850, stam: 300, oxy: 150, food: 3000, weight: 250, priorities: ['Melee', 'Weight', 'Health', 'Stamina'] },
-  { name: 'Carbonemys', hp: 700, stam: 200, oxy: 150, food: 3000, weight: 250, priorities: ['Health', 'Melee', 'Stamina'] },
-  { name: 'Iguanodon', hp: 400, stam: 225, oxy: 150, food: 1500, weight: 375, priorities: ['Weight', 'Health', 'Stamina'] },
-  { name: 'Ichthyosaurus', hp: 275, stam: 300, oxy: 150, food: 1500, weight: 250, priorities: ['Speed', 'Stamina', 'Health'] },
-  { name: 'Argentavis', hp: 365, stam: 400, oxy: 150, food: 2000, weight: 400, priorities: ['Weight', 'Stamina', 'Health', 'Melee'] },
-  { name: 'Thylacoleo', hp: 700, stam: 400, oxy: 150, food: 1500, weight: 400, priorities: ['Melee', 'Health', 'Stamina', 'Weight'] },
-  { name: 'Baryonyx', hp: 440, stam: 325, oxy: 150, food: 1500, weight: 325, priorities: ['Melee', 'Health', 'Stamina', 'Weight'] },
-  { name: 'Beelzebufo', hp: 200, stam: 200, oxy: 150, food: 1500, weight: 160, priorities: ['Health', 'Melee', 'Stamina', 'Speed'] },
-  { name: 'Sabertooth', hp: 250, stam: 200, oxy: 150, food: 1200, weight: 200, priorities: ['Melee', 'Health', 'Stamina', 'Weight'] },
-  { name: 'Castoroides', hp: 260, stam: 200, oxy: 150, food: 2000, weight: 300, priorities: ['Weight', 'Melee', 'Health', 'Stamina'] },
-  { name: 'Daeodon', hp: 900, stam: 400, oxy: 150, food: 4000, weight: 400, priorities: ['Health', 'Food', 'Weight'] },
-  { name: 'Ovis', hp: 130, stam: 100, oxy: 150, food: 400, weight: 90, priorities: ['Health'] },
-  { name: 'Mammoth', hp: 850, stam: 330, oxy: 150, food: 3000, weight: 500, priorities: ['Melee', 'Weight', 'Stamina', 'Health'] },
-  { name: 'Rex', hp: 1000, stam: 420, oxy: 150, food: 3000, weight: 500, priorities: ['Health', 'Melee'] },
-  { name: 'Therizinosaur', hp: 870, stam: 300, oxy: 150, food: 3000, weight: 365, priorities: ['Health', 'Melee'] },
-  { name: 'Yutyrannus', hp: 1100, stam: 420, oxy: 150, food: 3000, weight: 500, priorities: ['Health', 'Stamina', 'Melee'] },
-  { name: 'Megatherium', hp: 740, stam: 400, oxy: 150, food: 3000, weight: 725, priorities: ['Melee', 'Health', 'Stamina'] },
-];
+type PlayStyle = {
+  name: string;
+  priorities: string[];
+};
+
+type Tame = {
+  name: string;
+  hp: number;
+  stam: number;
+  oxy: number;
+  food: number;
+  weight: number;
+  styles: PlayStyle[];
+};
+
+const tamesList: Tame[] = [
+  { 
+    name: 'Ankylosaurus', hp: 700, stam: 175, oxy: 150, food: 3000, weight: 250, 
+    styles: [
+      { name: 'Metal Harvester', priorities: ['Melee', 'Weight'] },
+      { name: 'Tank', priorities: ['Health', 'Melee'] },
+      { name: 'Transport', priorities: ['Weight', 'Stamina', 'Speed'] }
+    ] 
+  },
+  { 
+    name: 'Argentavis', hp: 365, stam: 400, oxy: 150, food: 2000, weight: 400, 
+    styles: [
+      { name: 'Weight Hauler', priorities: ['Weight', 'Stamina'] },
+      { name: 'Combat Mount', priorities: ['Health', 'Melee', 'Stamina'] },
+      { name: 'Speed Scout', priorities: ['Speed', 'Stamina'] },
+      { name: 'Mobile Smithy', priorities: ['Weight', 'Health'] }
+    ] 
+  },
+  { 
+    name: 'Baryonyx', hp: 440, stam: 325, oxy: 150, food: 1500, weight: 325, 
+    styles: [
+      { name: 'Cave Runner', priorities: ['Health', 'Melee', 'Stamina'] },
+      { name: 'Ocean Explorer', priorities: ['Oxygen', 'Speed', 'Stamina'] },
+      { name: 'Meat Runner', priorities: ['Melee', 'Weight'] }
+    ] 
+  },
+  { 
+    name: 'Beelzebufo', hp: 200, stam: 200, oxy: 150, food: 1500, weight: 160, 
+    styles: [
+      { name: 'Cementing Paste Farmer', priorities: ['Melee', 'Health', 'Stamina'] },
+      { name: 'Swamp Scout', priorities: ['Speed', 'Stamina'] },
+      { name: 'Torpor Applier', priorities: ['Melee', 'Health'] }
+    ] 
+  },
+  { 
+    name: 'Carbonemys', hp: 700, stam: 200, oxy: 150, food: 3000, weight: 250, 
+    styles: [
+      { name: 'Turret Soaker', priorities: ['Health'] },
+      { name: 'Aquatic Tank', priorities: ['Health', 'Oxygen'] },
+      { name: 'Pack Mule', priorities: ['Weight', 'Speed'] }
+    ] 
+  },
+  { 
+    name: 'Castoroides', hp: 260, stam: 200, oxy: 150, food: 2000, weight: 300, 
+    styles: [
+      { name: 'Wood Harvester', priorities: ['Melee', 'Weight'] },
+      { name: 'Mobile Smithy', priorities: ['Weight', 'Health'] },
+      { name: 'Amphibious Scout', priorities: ['Speed', 'Stamina', 'Oxygen'] }
+    ] 
+  },
+  { 
+    name: 'Daeodon', hp: 900, stam: 400, oxy: 150, food: 4000, weight: 400, 
+    styles: [
+      { name: 'Boss Healer', priorities: ['Food', 'Health'] },
+      { name: 'Base Healer', priorities: ['Food', 'Weight'] },
+      { name: 'Combat Pig', priorities: ['Health', 'Melee', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Dilophosaurus', hp: 130, stam: 100, oxy: 150, food: 450, weight: 45, 
+    styles: [
+      { name: 'Base Guard', priorities: ['Health', 'Melee'] },
+      { name: 'Turret', priorities: ['Melee'] },
+      { name: 'Distraction', priorities: ['Speed', 'Health'] }
+    ] 
+  },
+  { 
+    name: 'Dodo', hp: 40, stam: 100, oxy: 150, food: 450, weight: 50, 
+    styles: [
+      { name: 'Egg Layer', priorities: ['Health', 'Food'] },
+      { name: 'Suicide Bomber (C4)', priorities: ['Speed', 'Health'] },
+      { name: 'Pet', priorities: ['Health'] }
+    ] 
+  },
+  { 
+    name: 'Doedicurus', hp: 850, stam: 300, oxy: 150, food: 3000, weight: 250, 
+    styles: [
+      { name: 'Stone Harvester', priorities: ['Melee', 'Weight'] },
+      { name: 'Rolling Tank', priorities: ['Health', 'Stamina'] },
+      { name: 'Base Defender', priorities: ['Health', 'Melee'] }
+    ] 
+  },
+  { 
+    name: 'Ichthyosaurus', hp: 275, stam: 300, oxy: 150, food: 1500, weight: 250, 
+    styles: [
+      { name: 'Deep Sea Scout', priorities: ['Speed', 'Stamina'] },
+      { name: 'Pearl Gatherer', priorities: ['Weight', 'Speed'] },
+      { name: 'Escort', priorities: ['Health', 'Melee'] }
+    ] 
+  },
+  { 
+    name: 'Iguanodon', hp: 400, stam: 225, oxy: 150, food: 1500, weight: 375, 
+    styles: [
+      { name: 'Infinite Sprinter', priorities: ['Speed', 'Weight'] },
+      { name: 'Berry Farmer', priorities: ['Melee', 'Weight'] },
+      { name: 'Early Combat', priorities: ['Health', 'Melee', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Lystrosaurus', hp: 130, stam: 100, oxy: 150, food: 400, weight: 55, 
+    styles: [
+      { name: 'XP Buffer', priorities: ['Health', 'Food'] },
+      { name: 'Base Mascot', priorities: ['Health'] }
+    ] 
+  },
+  { 
+    name: 'Mammoth', hp: 850, stam: 330, oxy: 150, food: 3000, weight: 500, 
+    styles: [
+      { name: 'Wood Harvester', priorities: ['Melee', 'Weight'] },
+      { name: 'War Elephant', priorities: ['Health', 'Melee', 'Stamina'] },
+      { name: 'Mobile Base', priorities: ['Weight', 'Health'] }
+    ] 
+  },
+  { 
+    name: 'Megatherium', hp: 740, stam: 400, oxy: 150, food: 3000, weight: 725, 
+    styles: [
+      { name: 'Broodmother Killer', priorities: ['Health', 'Melee'] },
+      { name: 'Bug Farmer', priorities: ['Melee', 'Weight', 'Stamina'] },
+      { name: 'Cave Tank', priorities: ['Health', 'Melee', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Moschops', hp: 200, stam: 150, oxy: 150, food: 1500, weight: 130, 
+    styles: [
+      { name: 'Organic Polymer Farmer', priorities: ['Melee', 'Weight'] },
+      { name: 'Early Harvester', priorities: ['Weight', 'Speed'] },
+      { name: 'Meat Shield', priorities: ['Health'] }
+    ] 
+  },
+  { 
+    name: 'Ovis', hp: 130, stam: 100, oxy: 150, food: 400, weight: 90, 
+    styles: [
+      { name: 'Mutton Farm', priorities: ['Health', 'Food'] },
+      { name: 'Wool Producer', priorities: ['Food'] },
+      { name: 'Pet', priorities: ['Health'] }
+    ] 
+  },
+  { 
+    name: 'Parasaur', hp: 390, stam: 175, oxy: 150, food: 1500, weight: 255, 
+    styles: [
+      { name: 'Radar/Turret', priorities: ['Food', 'Health'] },
+      { name: 'Early Pack Mule', priorities: ['Weight', 'Speed'] },
+      { name: 'Berry Gatherer', priorities: ['Melee', 'Weight'] }
+    ] 
+  },
+  { 
+    name: 'Pteranodon', hp: 210, stam: 150, oxy: 150, food: 1200, weight: 120, 
+    styles: [
+      { name: 'Fast Scout', priorities: ['Speed', 'Stamina'] },
+      { name: 'Light Fighter', priorities: ['Melee', 'Health', 'Stamina'] },
+      { name: 'Quick Transport', priorities: ['Weight', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Raptor', hp: 200, stam: 150, oxy: 150, food: 1200, weight: 140, 
+    styles: [
+      { name: 'Pack Hunter', priorities: ['Melee', 'Health', 'Speed'] },
+      { name: 'Cave Scout', priorities: ['Stamina', 'Speed', 'Health'] },
+      { name: 'Meat Runner', priorities: ['Weight', 'Melee'] }
+    ] 
+  },
+  { 
+    name: 'Rex', hp: 1000, stam: 420, oxy: 150, food: 3000, weight: 500, 
+    styles: [
+      { name: 'Alpha Boss Killer', priorities: ['Health', 'Melee'] },
+      { name: 'Meat Runner', priorities: ['Melee', 'Weight'] },
+      { name: 'Base Defender', priorities: ['Health', 'Melee', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Sabertooth', hp: 250, stam: 200, oxy: 150, food: 1200, weight: 200, 
+    styles: [
+      { name: 'Cave Runner', priorities: ['Melee', 'Health', 'Stamina'] },
+      { name: 'Hide/Chitin Farmer', priorities: ['Melee', 'Weight'] },
+      { name: 'Fast Scout', priorities: ['Speed', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Therizinosaur', hp: 870, stam: 300, oxy: 150, food: 3000, weight: 365, 
+    styles: [
+      { name: 'Dragon Boss Killer', priorities: ['Health', 'Melee'] },
+      { name: 'Delicate Harvester', priorities: ['Melee', 'Weight'] },
+      { name: 'Power Harvester', priorities: ['Melee', 'Weight'] },
+      { name: 'War Mount', priorities: ['Health', 'Melee', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Thylacoleo', hp: 700, stam: 400, oxy: 150, food: 1500, weight: 400, 
+    styles: [
+      { name: 'Cave Brawler', priorities: ['Health', 'Melee', 'Stamina'] },
+      { name: 'Tree Sniper', priorities: ['Health', 'Stamina'] },
+      { name: 'Meat/Hide Farmer', priorities: ['Melee', 'Weight'] }
+    ] 
+  },
+  { 
+    name: 'Trike', hp: 395, stam: 150, oxy: 150, food: 3000, weight: 315, 
+    styles: [
+      { name: 'Early Tank', priorities: ['Health', 'Melee'] },
+      { name: 'Berry Farmer', priorities: ['Melee', 'Weight'] },
+      { name: 'Pack Mule', priorities: ['Weight', 'Stamina'] }
+    ] 
+  },
+  { 
+    name: 'Yutyrannus', hp: 1100, stam: 420, oxy: 150, food: 3000, weight: 500, 
+    styles: [
+      { name: 'Boss Buffer', priorities: ['Health', 'Stamina'] },
+      { name: 'War Mount', priorities: ['Health', 'Melee', 'Stamina'] },
+      { name: 'Base Defender', priorities: ['Health', 'Stamina', 'Melee'] }
+    ] 
+  }
+].sort((a, b) => a.name.localeCompare(b.name));
 
 export function TameProgressionViewer() {
   const [selectedTameName, setSelectedTameName] = useState(tamesList[0].name);
-
   const selectedTame = useMemo(() => tamesList.find(t => t.name === selectedTameName) || tamesList[0], [selectedTameName]);
+
+  const [selectedStyleName, setSelectedStyleName] = useState(selectedTame.styles[0].name);
+  const selectedStyle = useMemo(() => selectedTame.styles.find(s => s.name === selectedStyleName) || selectedTame.styles[0], [selectedTame, selectedStyleName]);
+
+  // Reset style selection when tame changes
+  useEffect(() => {
+    setSelectedStyleName(selectedTame.styles[0].name);
+  }, [selectedTame]);
 
   const progressionData = useMemo(() => {
     const rows = [];
     const pointsPer10Levels = 10;
-    const pointsPerStat = pointsPer10Levels / selectedTame.priorities.length;
+    const pointsPerStat = pointsPer10Levels / selectedStyle.priorities.length;
 
     let currentHp = selectedTame.hp;
     let currentStam = selectedTame.stam;
@@ -70,48 +275,72 @@ export function TameProgressionViewer() {
         speed: Math.round(currentSpeed)
       });
 
-      if (selectedTame.priorities.includes('Health')) currentHp += multHp * pointsPerStat;
-      if (selectedTame.priorities.includes('Stamina')) currentStam += multStam * pointsPerStat;
-      if (selectedTame.priorities.includes('Oxygen')) currentOxy += multOxy * pointsPerStat;
-      if (selectedTame.priorities.includes('Food')) currentFood += multFood * pointsPerStat;
-      if (selectedTame.priorities.includes('Weight')) currentWeight += multWeight * pointsPerStat;
-      if (selectedTame.priorities.includes('Melee')) currentMelee += multMelee * pointsPerStat;
-      if (selectedTame.priorities.includes('Speed')) currentSpeed += multSpeed * pointsPerStat;
+      if (selectedStyle.priorities.includes('Health')) currentHp += multHp * pointsPerStat;
+      if (selectedStyle.priorities.includes('Stamina')) currentStam += multStam * pointsPerStat;
+      if (selectedStyle.priorities.includes('Oxygen')) currentOxy += multOxy * pointsPerStat;
+      if (selectedStyle.priorities.includes('Food')) currentFood += multFood * pointsPerStat;
+      if (selectedStyle.priorities.includes('Weight')) currentWeight += multWeight * pointsPerStat;
+      if (selectedStyle.priorities.includes('Melee')) currentMelee += multMelee * pointsPerStat;
+      if (selectedStyle.priorities.includes('Speed')) currentSpeed += multSpeed * pointsPerStat;
     }
     return rows;
-  }, [selectedTame]);
+  }, [selectedTame, selectedStyle]);
 
-  const isPriority = (statName: string) => selectedTame.priorities.includes(statName);
+  const isPriority = (statName: string) => selectedStyle.priorities.includes(statName);
 
   return (
     <Card title="Tame Stat Progression">
-      <div className="mb-6">
-        <label htmlFor="tame-select" className="block text-sm font-medium text-slate-400 mb-2">
-          Select Tame to View Progression
-        </label>
-        <div className="relative">
-          <select
-            id="tame-select"
-            value={selectedTameName}
-            onChange={(e) => setSelectedTameName(e.target.value)}
-            className="block w-full appearance-none bg-slate-900 border border-slate-700 text-slate-200 py-3 px-4 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors cursor-pointer"
-          >
-            {tamesList.map(tame => (
-              <option key={tame.name} value={tame.name}>{tame.name}</option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-            <ChevronDown className="w-4 h-4" />
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="tame-select" className="block text-sm font-medium text-slate-400 mb-2">
+            Select Tame
+          </label>
+          <div className="relative">
+            <select
+              id="tame-select"
+              value={selectedTameName}
+              onChange={(e) => setSelectedTameName(e.target.value)}
+              className="block w-full appearance-none bg-slate-900 border border-slate-700 text-slate-200 py-3 px-4 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors cursor-pointer"
+            >
+              {tamesList.map(tame => (
+                <option key={tame.name} value={tame.name}>{tame.name}</option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+              <ChevronDown className="w-4 h-4" />
+            </div>
           </div>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Priorities:</span>
-          {selectedTame.priorities.map(p => (
-            <span key={p} className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">
-              {p}
-            </span>
-          ))}
+
+        <div>
+          <label htmlFor="style-select" className="block text-sm font-medium text-slate-400 mb-2">
+            Select Play Style
+          </label>
+          <div className="relative">
+            <select
+              id="style-select"
+              value={selectedStyleName}
+              onChange={(e) => setSelectedStyleName(e.target.value)}
+              className="block w-full appearance-none bg-slate-900 border border-slate-700 text-slate-200 py-3 px-4 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors cursor-pointer"
+            >
+              {selectedTame.styles.map(style => (
+                <option key={style.name} value={style.name}>{style.name}</option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+              <ChevronDown className="w-4 h-4" />
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2 items-center">
+        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Priorities for {selectedStyleName}:</span>
+        {selectedStyle.priorities.map(p => (
+          <span key={p} className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            {p}
+          </span>
+        ))}
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-slate-800">
@@ -145,7 +374,7 @@ export function TameProgressionViewer() {
         </table>
       </div>
       <p className="text-xs text-slate-500 mt-4 leading-relaxed">
-        * Values are approximate representations based on base level 1 stats. Actual in-game values depend on wild levels, taming effectiveness, and server settings. Highlighted columns indicate recommended stats to level.
+        * Values are approximate representations based on base level 1 stats. Actual in-game values depend on wild levels, taming effectiveness, and server settings. Highlighted columns indicate recommended stats to level for the chosen play style.
       </p>
     </Card>
   );
