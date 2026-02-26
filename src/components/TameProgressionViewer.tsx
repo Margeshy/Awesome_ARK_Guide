@@ -243,16 +243,7 @@ export function TameProgressionViewer() {
 
   const progressionData = useMemo(() => {
     const rows = [];
-    const pointsPer10Levels = 10;
-    const pointsPerStat = pointsPer10Levels / selectedStyle.priorities.length;
-
-    let currentHp = selectedTame.hp;
-    let currentStam = selectedTame.stam;
-    let currentOxy = selectedTame.oxy;
-    let currentFood = selectedTame.food;
-    let currentWeight = selectedTame.weight;
-    let currentMelee = 100; // Base 100%
-    let currentSpeed = 100; // Base 100%
+    const levelUpSteps = [0, 10, 20, 30, 40, 50, 60, 70, 80, 88];
 
     // Approximate tamed stat multipliers per point
     const multHp = selectedTame.hp * 0.054;
@@ -263,25 +254,35 @@ export function TameProgressionViewer() {
     const multMelee = 5; // 5% per point
     const multSpeed = 1; // 1% per point
 
-    for (let level = 1; level <= 100; level += (level === 1 ? 9 : 10)) {
-      rows.push({
-        level,
-        hp: Math.round(currentHp),
-        stam: Math.round(currentStam),
-        oxy: Math.round(currentOxy),
-        food: Math.round(currentFood),
-        weight: Math.round(currentWeight),
-        melee: Math.round(currentMelee),
-        speed: Math.round(currentSpeed)
-      });
+    for (const levelsAdded of levelUpSteps) {
+      const pointsPerStat = levelsAdded / selectedStyle.priorities.length;
 
-      if (selectedStyle.priorities.includes('Health')) currentHp += multHp * pointsPerStat;
-      if (selectedStyle.priorities.includes('Stamina')) currentStam += multStam * pointsPerStat;
-      if (selectedStyle.priorities.includes('Oxygen')) currentOxy += multOxy * pointsPerStat;
-      if (selectedStyle.priorities.includes('Food')) currentFood += multFood * pointsPerStat;
-      if (selectedStyle.priorities.includes('Weight')) currentWeight += multWeight * pointsPerStat;
-      if (selectedStyle.priorities.includes('Melee')) currentMelee += multMelee * pointsPerStat;
-      if (selectedStyle.priorities.includes('Speed')) currentSpeed += multSpeed * pointsPerStat;
+      let hp = selectedTame.hp;
+      let stam = selectedTame.stam;
+      let oxy = selectedTame.oxy;
+      let food = selectedTame.food;
+      let weight = selectedTame.weight;
+      let melee = 100; // Base 100%
+      let speed = 100; // Base 100%
+
+      if (selectedStyle.priorities.includes('Health')) hp += multHp * pointsPerStat;
+      if (selectedStyle.priorities.includes('Stamina')) stam += multStam * pointsPerStat;
+      if (selectedStyle.priorities.includes('Oxygen')) oxy += multOxy * pointsPerStat;
+      if (selectedStyle.priorities.includes('Food')) food += multFood * pointsPerStat;
+      if (selectedStyle.priorities.includes('Weight')) weight += multWeight * pointsPerStat;
+      if (selectedStyle.priorities.includes('Melee')) melee += multMelee * pointsPerStat;
+      if (selectedStyle.priorities.includes('Speed')) speed += multSpeed * pointsPerStat;
+
+      rows.push({
+        levelsAdded,
+        hp: Math.round(hp),
+        stam: Math.round(stam),
+        oxy: Math.round(oxy),
+        food: Math.round(food),
+        weight: Math.round(weight),
+        melee: Math.round(melee),
+        speed: Math.round(speed)
+      });
     }
     return rows;
   }, [selectedTame, selectedStyle]);
@@ -347,7 +348,7 @@ export function TameProgressionViewer() {
         <table className="w-full text-sm text-left font-mono">
           <thead className="text-xs text-slate-400 uppercase bg-slate-900/80 border-b border-slate-800">
             <tr>
-              <th className="px-4 py-3">Level</th>
+              <th className="px-4 py-3">Levels Added</th>
               <th className={`px-4 py-3 ${isPriority('Health') ? 'text-emerald-400' : ''}`}>Health</th>
               <th className={`px-4 py-3 ${isPriority('Stamina') ? 'text-emerald-400' : ''}`}>Stamina</th>
               <th className={`px-4 py-3 ${isPriority('Oxygen') ? 'text-emerald-400' : ''}`}>Oxygen</th>
@@ -359,8 +360,8 @@ export function TameProgressionViewer() {
           </thead>
           <tbody className="divide-y divide-slate-800/50">
             {progressionData.map((row, idx) => (
-              <tr key={row.level} className={idx % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}>
-                <td className="px-4 py-2 text-slate-300">{row.level}</td>
+              <tr key={row.levelsAdded} className={idx % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}>
+                <td className="px-4 py-2 text-slate-300">+{row.levelsAdded}</td>
                 <td className={`px-4 py-2 ${isPriority('Health') ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>{row.hp}</td>
                 <td className={`px-4 py-2 ${isPriority('Stamina') ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>{row.stam}</td>
                 <td className={`px-4 py-2 ${isPriority('Oxygen') ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>{row.oxy}</td>
@@ -374,7 +375,7 @@ export function TameProgressionViewer() {
         </table>
       </div>
       <p className="text-xs text-slate-500 mt-4 leading-relaxed">
-        * Values are approximate representations based on base level 1 stats. Actual in-game values depend on wild levels, taming effectiveness, and server settings. Highlighted columns indicate recommended stats to level for the chosen play style.
+        * Values are approximate representations based on base tamed stats. Tames can be leveled up a maximum of 88 times. Actual in-game values depend on wild levels, taming effectiveness, and server settings. Highlighted columns indicate recommended stats to level for the chosen play style.
       </p>
     </Card>
   );
